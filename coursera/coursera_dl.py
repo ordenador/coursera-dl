@@ -88,14 +88,14 @@ assert V(six.__version__) >= V('1.5'), "Upgrade six!" + _SEE_URL
 assert V(bs4.__version__) >= V('4.1'), "Upgrade bs4!" + _SEE_URL
 
 
-def get_session():
+def get_session(args):
     """
     Create a session with TLS v1.2 certificate.
     """
 
     session = requests.Session()
     cj = cookielib.MozillaCookieJar()
-    cj.load('cookies.txt', ignore_expires=True)
+    cj.load(args.cookies_file, ignore_expires=True)
     session.cookies = cj
     session.mount('https://', TLSAdapter())
 
@@ -109,7 +109,7 @@ def list_courses(args):
     @param args: Command-line arguments.
     @type args: namedtuple
     """
-    session = get_session()
+    session = get_session(args)
     # login(session, args.username, args.password)
     extractor = CourseraExtractor(session)
     courses = extractor.list_courses()
@@ -237,7 +237,7 @@ def main():
         list_courses(args)
         return
 
-    session = get_session()
+    session = get_session(args)
     # login(session, args.username, args.password)
     if args.specialization:
         args.class_names = expand_specializations(session, args.class_names)
